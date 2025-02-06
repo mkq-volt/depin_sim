@@ -37,7 +37,7 @@ def plot_results(results):
                      results['circulating_supply']['mean'] + results['circulating_supply']['std'],
                      alpha=0.2)
     ax2.set_title('Token Supply Over Time', fontsize=12, pad=10)
-    ax2.set_xlabel('Time Steps')
+    ax2.set_xlabel('Weeks')
     ax2.set_ylabel('Supply')
     
     # Demand Plot
@@ -47,8 +47,8 @@ def plot_results(results):
                      results['demand']['mean'] + results['demand']['std'],
                      alpha=0.2)
     ax3.set_title('Service Demand Over Time', fontsize=12, pad=10)
-    ax3.set_xlabel('Time Steps')
-    ax3.set_ylabel('Demand')
+    ax3.set_xlabel('Weeks')
+    ax3.set_ylabel('Units of Capacity Demanded')
 
     # Number of Providers Plot
     sns.lineplot(data=results['num_providers']['mean'], ax=ax4, label='Mean Number of Providers')
@@ -57,7 +57,7 @@ def plot_results(results):
                      results['num_providers']['mean'] + results['num_providers']['std'],
                      alpha=0.2)
     ax4.set_title('Number of Providers Over Time', fontsize=12, pad=10)
-    ax4.set_xlabel('Time Steps')
+    ax4.set_xlabel('Weeks')
     ax4.set_ylabel('Number of Providers')
 
     # Capacity Plot
@@ -66,9 +66,9 @@ def plot_results(results):
                      results['total_capacity']['mean'] - results['total_capacity']['std'],
                      results['total_capacity']['mean'] + results['total_capacity']['std'],
                      alpha=0.2)
-    ax5.set_title('Total Capacity Over Time', fontsize=12, pad=10)
-    ax5.set_xlabel('Time Steps')
-    ax5.set_ylabel('Capacity')
+    ax5.set_title('Total Units of Capacity Over Time', fontsize=12, pad=10)
+    ax5.set_xlabel('Weeks')
+    ax5.set_ylabel('Units of Capacity')
 
     # Service Price Plot
     sns.lineplot(data=results['service_price']['mean'], ax=ax6, label='Mean Service Price')
@@ -77,8 +77,8 @@ def plot_results(results):
                      results['service_price']['mean'] + results['service_price']['std'],
                      alpha=0.2)
     ax6.set_title('Service Price Over Time', fontsize=12, pad=10)
-    ax6.set_xlabel('Time Steps')
-    ax6.set_ylabel('Price')
+    ax6.set_xlabel('Weeks')
+    ax6.set_ylabel('Price per Unit of Capacity')
     
     # Adjust layout and style
     plt.tight_layout()
@@ -107,7 +107,8 @@ This simulation models a decentralized physical infrastructure network (DePIN) w
 3. The **Protocol** manages token emissions to reward providers and maintain network stability
 4. **Market Forces** (macro conditions) influence token price and participant behavior
 
-The simulation runs multiple scenarios to show how different parameters and scenarios affect network growth and stability over time.
+The simulation runs multiple scenarios to show how different parameters and scenarios affect network growth and stability over time. Each simulation is run for 52 weeks
+20 times. The plots are the aggregated results, showing the variance as the shaded area.
 
 In essence, this is a model of a dynamical system, and this tool can help protocol designers find the 'optimal' parameters for 
 their designs. In different scenarios, one can 'solve' for the Maximum weekly mint and percent burned to create a stable deflation, for example. 
@@ -150,7 +151,7 @@ with st.sidebar:
     max_mint = st.number_input(
         'Maximum Mint Weekly',
         min_value=0,
-        value=30_000,
+        value=3500,
         step=1000
     )
     
@@ -171,8 +172,8 @@ with st.sidebar:
     initial_supply = st.number_input(
         'Initial Supply',
         min_value=100,
-        value=10_000_000,
-        step=100
+        value=1_000_000,
+        step=10_000
     )
     
     run_button = st.button('Run Simulation')
