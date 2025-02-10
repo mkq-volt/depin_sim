@@ -35,7 +35,7 @@ def demand_scenarios(type: str):
             'demand_type': 'growth',
             'base_demand': 4_000,
             'demand_price_elasticity': 0.4,
-            'demand_growth_rate': 0.001,
+            'demand_growth_rate': 0.002,
             'demand_decay_rate': 0,
             'demand_volatility': 0
         }

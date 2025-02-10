@@ -22,7 +22,6 @@ def generate_weekly_demand(params, substep, state_history, prev_state) -> float:
     elif type == 'growth':
         growth_rate = params.get('demand_growth_rate', .001)
         prev_demand = prev_state['demand']
-        print(price_adjustment)
         demand = prev_demand * (1 + growth_rate * price_adjustment) * noise
     elif type == 'high_to_decay':
         decay_rate = params.get('demand_decay_rate', 1)
