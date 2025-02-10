@@ -86,6 +86,10 @@ def plot_results(results):
     
     return fig
 
+# Initialize session state for storing simulation history
+if 'simulation_history' not in st.session_state:
+    st.session_state.simulation_history = []
+
 # Streamlit UI
 
 # Set Streamlit theme
@@ -103,87 +107,141 @@ st.markdown("""
 This simulation models a decentralized physical infrastructure network (DePIN) where:
 
 1. **Providers** join the network based on expected rewards and contribute capacity
-2. **Users** generate demand for the service, which affects service pricing
-3. The **Protocol** manages token emissions to reward providers and maintain network stability
+2. **Users** generate demand for the service and purchase tokens to pay for it
+3. The **Protocol** manages token emissions/burns and service pricing to maintain network stability
 4. **Market Forces** (macro conditions) influence token price and participant behavior
+            
+This is a model of a dynamical system, and this tool can help protocol designers find the 'optimal' parameters for 
+their designs. In different scenarios, one can 'solve' for the maximum weekly mint and percent burned to create a stable deflation, for example.  
 
-The simulation runs multiple scenarios to show how different parameters and scenarios affect network growth and stability over time. Each simulation is run for 52 weeks
+The simulation runs multiple scenarios to show how they affect network growth and stability over time. Each simulation is run for 52 weeks
 20 times. The plots are the aggregated results, showing the variance as the shaded area.
 
-In essence, this is a model of a dynamical system, and this tool can help protocol designers find the 'optimal' parameters for 
-their designs. In different scenarios, one can 'solve' for the Maximum weekly mint and percent burned to create a stable deflation, for example. 
-Additionally, setting the percent burned to 0 can emulate a non Burn-and-Mint fee design. 
-            
-Like any model, the metrics tracked here are not predictive, but instead represent the relationships between the parameters
-in a generalized DePIN economy. 
+
 
 """)
 
 # Input parameters
 with st.sidebar:
     st.header('Simulation Parameters')
-    
-    st.markdown("""
-    **Demand Type**: Choose how demand for the service evolves over time:
-    - Volatile: Highly variable demand
-    - Consistent: Stable, predictable demand
-    - High-to-decay: Initially high demand that decays
-    - Growth: Steadily increasing demand
-    """)
     demand_type = st.radio(
-        'Demand Type',
-        ['volatile', 'consistent', 'high-to-decay', 'growth']
+        '***Demand Type***',
+        [
+            'volatile',
+            'consistent',
+            'high-to-decay', 
+            'growth'
+        ],
+        format_func=lambda x: {
+            'volatile': 'volatile: highly variable demand',
+            'consistent': 'consistent: stable, predictable demand',
+            'high-to-decay': 'high-to-decay: initially high demand that decays', 
+            'growth': 'growth: steadily increasing demand'
+        }[x]
     )
-    
-    st.markdown("""
-    **Macro Condition**: Set the overall market environment:
-    - Bearish: Declining market conditions
-    - Bullish: Growing market conditions
-    """)
     macro_condition = st.radio(
-        'Macro Condition',
-        ['bearish', 'bullish']
+        '***Macro Condition***',
+        [
+            'bearish',
+            'bullish'
+        ],
+        format_func=lambda x: {
+            'bearish': 'bearish: declining market conditions',
+            'bullish': 'bullish: growing market conditions'
+        }[x]
     )
     
-    st.markdown("""
-    **Maximum Weekly Mint**: Maximum number of new tokens that can be created each week
-    """)
     max_mint = st.number_input(
-        'Maximum Mint Weekly',
+        '***Maximum Mint Weekly***',
         min_value=0,
         value=3500,
         step=1000
     )
-    
-    st.markdown("""
-    **Percent Burned**: Portion of tokens destroyed from circulation with each transaction
-    """)
+
     percent_burned = st.slider(
-        'Percent Burned',
+        '***Percent of Tokens Burned***',
         min_value=0.0,
         max_value=1.0,
         value=0.1,
         step=0.1
     )
     
-    st.markdown("""
-    **Initial Supply**: Starting amount of tokens in circulation
-    """)
     initial_supply = st.number_input(
-        'Initial Supply',
+        '***Initial Supply***',
         min_value=100,
         value=1_000_000,
         step=10_000
     )
     
-    run_button = st.button('Run Simulation')
+    col1, col2 = st.columns(2)
+    with col1:
+        run_button = st.button('***Run Simulation***')
+    with col2:
+        clear_button = st.button('Clear History')
+
+# Clear simulation history if clear button is pressed
+if clear_button:
+    st.session_state.simulation_history = []
+    st.query_params.clear()
 
 # Run simulation when button is clicked
 if run_button:
-    params = params(demand_type, macro_condition, max_mint, percent_burned)
-    initial_state = initial_state(initial_supply, demand_type)
+    # Create a dictionary to store the current run's parameters
+    current_params = {
+        'demand_type': demand_type,
+        'macro_condition': macro_condition,
+        'max_mint': max_mint,
+        'percent_burned': percent_burned,
+        'initial_supply': initial_supply
+    }
+
+
+    params_config = params(demand_type, macro_condition, max_mint, percent_burned)
+    initial_state_config = initial_state(initial_supply, demand_type)
     
     with st.spinner('Running simulations...'):
-        results = execute(params, initial_state, state_update_blocks, 52, 20)
+        results = execute(params_config, initial_state_config, state_update_blocks, 52, 20)
         fig = plot_results(results)
-        st.pyplot(fig)
+        
+        # Add new simulation to history
+        st.session_state.simulation_history.append({
+            'parameters': current_params,
+            'figure': fig
+        })
+        
+        # Keep only the last 5 runs
+        if len(st.session_state.simulation_history) > 5:
+            st.session_state.simulation_history.pop(0)
+
+# Display simulation history
+if st.session_state.simulation_history:
+    st.markdown("---")
+    st.write(f"***Showing {len(st.session_state.simulation_history)} most recent simulation runs***")
+    for i, run in enumerate(reversed(st.session_state.simulation_history)):
+        run_number = len(st.session_state.simulation_history) - i
+        st.subheader(f"Run #{run_number} Parameters:")
+        
+        # Display parameters in a more readable format
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write("Demand Type: `" + str(run['parameters']['demand_type']) + "`")
+            st.write("Macro Condition: `" + str(run['parameters']['macro_condition']) + "`")
+            st.write("Maximum Mint Weekly:", run['parameters']['max_mint'])
+        with col2:
+            st.write("Percent Burned:", run['parameters']['percent_burned'])
+            st.write("Initial Supply:", run['parameters']['initial_supply'])
+        
+        # Display the plot
+        st.pyplot(run['figure'])
+        
+        # Add a divider between runs
+        if i < len(st.session_state.simulation_history) - 1:
+            st.markdown("---")
+
+
+
+
+# Add a spacer to push the disclaimer to the bottom
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("*Like any model, the metrics tracked here are not predictive, but instead represent the relationships between the parameters in a generalized DePIN economy.*")
