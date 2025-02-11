@@ -299,6 +299,6 @@ with faq_tab:
         - The default inputs should give a good idea of relative differences between these parameters that produce a 'normal' rate of inflation™. 
         - This can of course be solved analytically, but we leave that as an Exercise For The Reader™.
     - Protocol designers can test their inputs in different scenarios and tweak them to find the theoretical conditions that are optimal for their protocol.
-        - This can include A/B testing deflation vs. inflation, BME vs. inflationary, levels of inflation, new token burn/mint policies, etc.
+        - This can include A/B testing deflation vs. inflation, BME vs. inflationary, novel token burn/mint ratios, etc.
                 
     """)
