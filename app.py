@@ -288,6 +288,10 @@ with faq_tab:
                 
     As the user of this simulations, you can input your own tokenomics and scenarios. Although the actual 'inputs' include dozens of parameters and exogenous conditions, 
     we fixed most of them to create a 'default' scenario, leaving the most relevant parameters to be tuned by the user of this interface. 
+                
+    Note that metrics like token price or service price are not meant to accurately represent or predict the price of the token or service in a real environment. Instead, they are
+    ratios that represent 'fundamental' values of the token based on the net flows of tokens in the economy at that time. All of the metrics in this simulation are representative of 
+    the relationships between different forces in the system. 
     
   
                 
