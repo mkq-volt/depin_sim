@@ -114,7 +114,7 @@ with main_tab:
     3. The **Protocol** manages token emissions/burns and service pricing to maintain network stability
     4. **Market Forces** (macro conditions) influence token price and participant behavior
     
-    The 'info' tab contains more details on the model and how to use it.
+    The 'info' tab above contains more details on the model and how to use it.
                 
     """)
 
@@ -151,7 +151,6 @@ with main_tab:
             demand_type = st.radio(
                 'Demand Type',
                 [
-
                     'consistent',
                     'high-to-decay', 
                     'growth',
@@ -168,19 +167,21 @@ with main_tab:
                 'Macro Condition',
                 [
                     'bearish',
-                    'bullish'
+                    'bullish',
+                    'sideways'
                 ],
                 format_func=lambda x: {
                     'bearish': 'bearish: declining',
-                    'bullish': 'bullish: growing'
+                    'bullish': 'bullish: growing',
+                    'sideways': 'sideways: stable'
                 }[x]
             )
             
-            # Replace separate buttons with a single form submit button
-            submitted = st.form_submit_button('Run Simulation')
-            
-        # Keep clear button outside the form
-        clear_button = st.button('Clear History')
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                submitted = st.form_submit_button('Run Simulation')
+            with col2:
+                clear_button = st.form_submit_button('Clear History', on_click=lambda: st.session_state.simulation_history.clear())
 
     # Clear simulation history if clear button is pressed
     if clear_button:
@@ -218,7 +219,7 @@ with main_tab:
     # Display simulation history or default image
     if st.session_state.simulation_history:
         st.markdown("---")
-        st.write(f"***Showing {len(st.session_state.simulation_history)} most recent simulation runs in order***")
+        # st.write(f"***Showing {len(st.session_state.simulation_history)} most recent simulation runs in order***")
         for i, run in enumerate(reversed(st.session_state.simulation_history)):
             run_number = len(st.session_state.simulation_history) - i
             st.subheader(f"Run #{run_number}:")
@@ -300,5 +301,6 @@ with faq_tab:
         - This can of course be solved analytically, but we leave that as an Exercise For The Reader™.
     - Protocol designers can test their inputs in different scenarios and tweak them to find the theoretical conditions that are optimal for their protocol.
         - This can include A/B testing deflation vs. inflation, BME vs. inflationary, novel token burn/mint ratios, etc.
+    - Macro conditions  put a positive or negative bias on the fundamental value of the token (net flows). This can be useful to test the robustness of the protocol.
                 
     """)

@@ -85,7 +85,7 @@ def update_macro(params, substep, state_history, prev_state, policy_input):
     elif macro_condition == 'bearish':
         macro = np.random.uniform(0.995, 1.0049)
     else:
-        macro = np.random.uniform(0.999, 1.0001)
+        macro = np.random.uniform(0.998, 1.002)
 
     return ('macro', macro)
 
