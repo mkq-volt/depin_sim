@@ -120,6 +120,8 @@ with main_tab:
 
     # Input parameters
     with st.sidebar:
+        st.image("img/voltcap.svg", width=150, use_container_width=False)
+        st.markdown("---")
         st.header('Simulation Parameters')
         st.markdown("""
         Input protocol design parameters and exogenous conditions.   
