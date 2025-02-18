@@ -120,7 +120,7 @@ with main_tab:
 
     # Input parameters
     with st.sidebar:
-        st.image("img/voltcap.svg", width=150, use_container_width=False)
+        st.markdown("[![Volt Capital](img/voltcap.svg)](https://volt.capital/)", unsafe_allow_html=True)
         st.markdown("---")
         st.header('Simulation Parameters')
         st.markdown("""
