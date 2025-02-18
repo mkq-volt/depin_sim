@@ -120,7 +120,16 @@ with main_tab:
 
     # Input parameters
     with st.sidebar:
-        st.markdown("[![Volt Capital](img/voltcap.svg)](https://volt.capital/)", unsafe_allow_html=True)
+        hide_image_fs = '''
+        <style>
+        button[title="View fullscreen"] {
+            visibility: hidden;
+        }
+        </style>
+        '''
+        st.markdown(hide_image_fs, unsafe_allow_html=True)
+        # st.image("img/voltcap.svg", width=150, use_container_width=False)
+        st.markdown("[![Volt Capital](https://raw.githubusercontent.com/mkq-volt/depin_sim/main/img/voltcap.svg)](https://volt.capital/)")
         st.markdown("---")
         st.header('Simulation Parameters')
         st.markdown("""
